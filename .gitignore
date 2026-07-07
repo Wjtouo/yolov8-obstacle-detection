@@ -1,21 +1,25 @@
+# Local environments and editor metadata
 .venv/
 .vscode/
 .specstory/
 
+# Python bytecode
 __pycache__/
 *.pyc
 *.pyo
 
+# Datasets and generated experiment outputs
 datasets/
 runs/
 runs_obstacle/
 
+# Model weights and exported inference artifacts
 *.pt
 *.pth
 *.onnx
 *.engine
 
+# Caches and temporary logs
 *.cache
 *.log
 *.tmp
-

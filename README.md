@@ -59,6 +59,14 @@ This project presents an obstacle detection system based on YOLOv8 for a graduat
 
 如果你要复现实验，需要先自行准备数据集，并根据本地环境修改 `configs/` 下对应配置文件中的路径。
 
+## 复现注意事项
+
+- 本仓库不会上传数据集、训练输出和模型权重，避免仓库体积过大并尊重数据集分发规则。
+- 克隆仓库后需要先安装依赖，再准备本地数据集路径。
+- `configs/` 中的 `path` 字段需要根据你电脑上的实际数据目录修改。
+- 如果使用 GUI 演示，请先准备训练好的 `best.pt` 权重，并在 `gui_main.py` 中确认默认权重路径是否存在。
+- 实验指标会受到数据集版本、训练轮数、模型大小、GPU 性能和阈值设置影响，README 中的达标目标用于毕业设计实验参考。
+
 ## 项目结构
 
 ```text
@@ -244,3 +252,7 @@ runs_obstacle/requirement_report.json
 - 光照变化与部分遮挡下的鲁棒性对比
 
 建议至少比较两个模型版本，例如 `yolov8n` 与 `yolov8s`。
+
+## 开源许可
+
+本项目采用 MIT License，详见 `LICENSE` 文件。代码可用于学习、研究和二次开发；数据集、预训练权重和第三方模型仍需遵守其各自的许可与使用条款。
