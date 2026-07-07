@@ -1,0 +1,13 @@
+path: H:/yolo_datasets/bdd100k_obstacle
+train: images/train
+val: images/val
+
+test: images/val
+
+names:
+  0: person
+  1: bicycle
+  2: e_bike
+  3: car
+  4: large_vehicle
+  5: obstacle

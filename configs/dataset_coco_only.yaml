@@ -1,0 +1,13 @@
+# 仅 COCO 子集（prepare_coco_obstacle.py 导出的 6 类）
+path: H:/yolo_datasets/coco_obstacle
+train: images/train
+val: images/val
+test: images/val
+
+names:
+  0: person
+  1: bicycle
+  2: e_bike
+  3: car
+  4: large_vehicle
+  5: obstacle

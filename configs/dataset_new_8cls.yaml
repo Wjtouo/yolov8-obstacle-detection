@@ -1,0 +1,20 @@
+# Combined dataset for incremental training
+# Old base dataset + custom new classes (speed_bump, tree_trunk, stone_bollard)
+
+train:
+  - H:/yolo_datasets/bdd_coco_merged/images/train
+  - H:/yolov8_obstacle_thesis/datasets/custom_new/images/train
+val:
+  - H:/yolo_datasets/bdd_coco_merged/images/val
+  - H:/yolov8_obstacle_thesis/datasets/custom_new/images/val
+
+nc: 8
+names:
+  0: person
+  1: bicycle
+  2: e_bike
+  3: car
+  4: large_vehicle
+  5: speed_bump
+  6: tree_trunk
+  7: stone_bollard
