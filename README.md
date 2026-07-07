@@ -1,26 +1,22 @@
-# YOLOv8 毕设项目：障碍物实时检测
+# YOLOv8 障碍物检测系统设计
 
-## 仓库说明
+基于 YOLOv8 的毕业设计项目，面向障碍物实时检测任务，包含数据准备、模型训练、推理测试、实时摄像头检测，以及达标评估脚本。
 
-本仓库公开的是项目代码、配置文件和使用说明，不包含以下内容：
+## 项目简介
 
-- 数据集原始图片与标注
-- 训练输出与实验结果目录
-- 模型权重文件（如 `*.pt`）
+本项目以 YOLOv8 为核心，围绕障碍物检测场景搭建了一套较完整的实验流程：
 
-如果你要复现实验，请先自行准备数据集，并根据本地路径修改 `configs/` 下的数据配置文件。
+- 数据集准备与标签转换
+- 多版本数据配置与训练脚本
+- 图片、视频、摄像头实时推理
+- mAP、FPS、抗干扰能力评估
 
-## 1. 项目目标
+适合作为毕业设计展示、实验复现和后续功能扩展的基础仓库。
 
-本项目基于 YOLOv 系列（默认 YOLOv8）实现障碍物实时检测，覆盖常见障碍物类型，并提供完整达标验证流程：
+## 检测目标
 
-- 检测类别：行人、车辆、固定障碍（红绿灯、停止标志等）
-- 指标目标：
-  - mAP50 >= 0.80
-  - FPS >= 15（一般 GPU 环境）
-  - 对光照变化、部分遮挡具备一定鲁棒性
+默认关注的障碍物类别包括：
 
-默认障碍物类别：
 - person
 - bicycle
 - motorcycle
@@ -30,25 +26,48 @@
 - traffic light
 - stop sign
 
----
+项目达标目标：
 
-## 2. 项目结构
+- `mAP50 >= 0.80`
+- `FPS >= 15`
+- 对光照变化、部分遮挡具备一定鲁棒性
 
-- `configs/dataset.yaml`：YOLO 数据配置
-- `configs/dataset_*.yaml`：不同数据集版本的训练配置
-- `scripts/prepare_coco_obstacle.py`：COCO 转 YOLO 标签脚本
-- `scripts/prepare_bdd100k_obstacle.py`：BDD100K 障碍物数据准备脚本
-- `scripts/train.py`：训练脚本
-- `scripts/predict.py`：推理脚本
-- `scripts/realtime_detect.py`：摄像头/视频实时检测（显示 FPS）
-- `scripts/evaluate_requirements.py`：一键评估 mAP/FPS/抗干扰并输出报告
-- `requirements.txt`：依赖
+## 仓库说明
 
----
+本仓库公开的是项目代码、配置文件和使用说明，不包含以下内容：
 
-## 3. 环境安装（Windows PowerShell）
+- 数据集原始图片与标注
+- 训练输出目录
+- 模型权重文件，如 `*.pt`
 
-在项目根目录执行：
+如果你要复现实验，需要先自行准备数据集，并根据本地环境修改 `configs/` 下对应配置文件中的路径。
+
+## 项目结构
+
+```text
+.
+├─ configs/                     数据集与训练配置
+├─ scripts/                     数据准备、训练、推理、评估脚本
+├─ gui_main.py                  图形界面主程序
+├─ requirements.txt             Python 依赖
+├─ train_*.py                   不同实验入口脚本
+└─ README.md
+```
+
+主要文件说明：
+
+- `configs/dataset.yaml`：主数据集配置
+- `configs/dataset_*.yaml`：不同数据集版本配置
+- `scripts/prepare_coco_obstacle.py`：COCO 转 YOLO 标签
+- `scripts/prepare_bdd100k_obstacle.py`：BDD100K 数据准备
+- `scripts/train.py`：训练入口
+- `scripts/predict.py`：图片/视频推理
+- `scripts/realtime_detect.py`：摄像头实时检测
+- `scripts/evaluate_requirements.py`：达标评估脚本
+
+## 环境安装
+
+在 Windows PowerShell 中执行：
 
 ```bash
 python -m venv .venv
@@ -56,132 +75,128 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-验证：
+安装完成后可执行：
 
 ```bash
 yolo checks
 ```
 
----
+## 数据集准备
 
-## 4. 下载 COCO2017
+### COCO2017
 
-你需要准备以下内容到同一个 COCO 根目录，例如 `D:\datasets\coco2017`：
+准备如下目录结构，例如 `D:\datasets\coco2017`：
 
-- `train2017/`（训练图片）
-- `val2017/`（验证图片）
+- `train2017/`
+- `val2017/`
 - `annotations/instances_train2017.json`
 - `annotations/instances_val2017.json`
 
-如果使用 BDD100K 或合并数据集训练，请同步检查 `configs/dataset.yaml`、`configs/dataset_merged.yaml` 等文件中的 `path` 是否与你本机的数据目录一致。
-
----
-
-## 5. 转换数据集（只保留障碍物类别）
+转换障碍物类别：
 
 ```bash
 python scripts/prepare_coco_obstacle.py --coco-root "D:\datasets\coco2017" --out-root "datasets/coco_obstacle"
 ```
 
-成功后，数据会在：
-- `datasets/coco_obstacle/images/train`
-- `datasets/coco_obstacle/images/val`
-- `datasets/coco_obstacle/labels/train`
-- `datasets/coco_obstacle/labels/val`
+### BDD100K 或合并数据集
 
----
+如果使用 BDD100K 或自定义合并数据集，请同步检查以下配置文件中的 `path`：
 
-## 6. 开始训练
+- `configs/dataset.yaml`
+- `configs/dataset_merged.yaml`
+- `configs/dataset_new_7cls.yaml`
+- `configs/dataset_new_8cls.yaml`
 
-GPU 训练：
+## 模型训练
+
+GPU 训练示例：
 
 ```bash
 python scripts/train.py --data configs/dataset.yaml --model yolov8n.pt --epochs 120 --imgsz 640 --batch 16 --device 0 --name yolov8n_obstacle_exp
 ```
 
-CPU 训练（慢很多）：
+CPU 训练示例：
 
 ```bash
 python scripts/train.py --data configs/dataset.yaml --model yolov8n.pt --epochs 120 --imgsz 640 --batch 8 --device cpu --name yolov8n_obstacle_cpu
 ```
 
-结果目录默认在：
-- `runs_obstacle/yolov8n_coco_obstacle/`
-- 最优权重：`weights/best.pt`
+训练建议：
 
----
+- 优先从 `yolov8n.pt` 开始，便于快速验证流程
+- 可再尝试 `yolov8s.pt` 做精度对比
+- 如果显存足够，可适当增大 `batch`
 
-建议：
-- 先跑 `yolov8n.pt`（速度优先），再尝试 `yolov8s.pt`（精度优先）做对比
-- 若显存足够可尝试 `--batch 24` 或更大提升收敛稳定性
+## 推理与实时检测
 
----
-
-## 7. 推理测试（图片/视频）
+图片或视频推理：
 
 ```bash
 python scripts/predict.py --model runs_obstacle/yolov8n_obstacle_exp/weights/best.pt --source "你的图片或视频路径" --conf 0.25 --imgsz 640 --device 0 --save
 ```
 
----
-
-## 8. 实时检测（摄像头）
+摄像头实时检测：
 
 ```bash
 python scripts/realtime_detect.py --model runs_obstacle/yolov8n_obstacle_exp/weights/best.pt --source 0 --conf 0.25 --imgsz 640 --device 0
 ```
 
+运行时：
+
 - 按 `q` 或 `ESC` 退出
 - 窗口左上角显示实时 FPS
 
----
+## 达标评估
 
-## 9. 一键评估是否达标（mAP/FPS/抗干扰）
+执行评估脚本：
 
 ```bash
 python scripts/evaluate_requirements.py --model runs_obstacle/yolov8n_obstacle_exp/weights/best.pt --data configs/dataset.yaml --device 0 --imgsz 640
 ```
 
-执行后会输出：
-- 基础指标：`mAP50`、`mAP50-95`、`FPS`
-- 抗干扰测试：`low_light`、`high_light`、`occlusion` 三种扰动下的 mAP
-- 结论：`ALL PASS: True/False`
-- 报告文件：`runs_obstacle/requirement_report.json`
+输出内容包括：
 
-默认判定阈值：
-- `mAP50 >= 0.80`
-- `FPS >= 15`
-- 抗干扰：最大 mAP50 下降 `<= 0.12`
+- `mAP50`
+- `mAP50-95`
+- `FPS`
+- `low_light`、`high_light`、`occlusion` 三类扰动测试结果
+- `ALL PASS: True/False`
 
----
+默认报告文件：
 
-## 10. 常见问题（新手必看）
+```text
+runs_obstacle/requirement_report.json
+```
 
-1) `ModuleNotFoundError`
-- 原因：没激活虚拟环境或没安装依赖
-- 解决：重新执行第 3 步
+## 常见问题
 
-2) `CUDA out of memory`
-- 原因：显存不够
-- 解决：降低 `--batch`（如 16 -> 8 -> 4）或减小 `--imgsz`（640 -> 512）
+`ModuleNotFoundError`
 
-3) 训练速度慢
-- 检查是否用了 `--device 0`（GPU）
-- 检查 `nvidia-smi` 是否有显存占用变化
+- 原因：虚拟环境未激活或依赖未安装
+- 解决：重新执行环境安装步骤
 
-4) 没有检测框
-- 先把 `--conf` 降到 `0.15`
-- 确认使用的是 `best.pt` 而不是随机模型
+`CUDA out of memory`
 
----
+- 原因：显存不足
+- 解决：减小 `batch` 或 `imgsz`
 
-## 11. 毕设报告建议最少指标
+训练速度慢
+
+- 检查是否使用了 `--device 0`
+- 检查 GPU 是否正常工作
+
+没有检测框
+
+- 先将 `--conf` 降到 `0.15`
+- 确认使用的是训练后的 `best.pt`
+
+## 毕设报告可展示指标
 
 - Precision
 - Recall
 - mAP50
 - mAP50-95
 - FPS
-- 扰动鲁棒性对比（光照变化、部分遮挡）
+- 光照变化与部分遮挡下的鲁棒性对比
 
-建议至少比较两个模型：`yolov8n` 和 `yolov8s`。
+建议至少比较两个模型版本，例如 `yolov8n` 与 `yolov8s`。
